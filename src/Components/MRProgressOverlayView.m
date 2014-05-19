@@ -130,9 +130,9 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
 + (NSArray *)allOverlaysForView:(UIView *)view {
     NSMutableArray *overlays = [NSMutableArray new];
     NSArray *subviews = view.subviews;
-    for (UIView *view in subviews) {
-        if ([view isKindOfClass:self]) {
-            [overlays addObject:view];
+    for (UIView *subview in subviews) {
+        if ([subview isKindOfClass:self]) {
+            [overlays addObject:subview];
         }
     }
     return overlays;
