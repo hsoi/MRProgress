@@ -441,6 +441,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
     _mode = mode;
     
     [self showModeView:[self createModeView]];
+    [self updateModeViewMayStop];
     
     if (!self.hidden) {
         [self manualLayoutSubviews];
@@ -467,11 +468,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
 - (void)setStopBlock:(MRProgressOverlayViewStopBlock)stopBlock {
     _stopBlock = stopBlock;
     
-    BOOL mayStop = stopBlock != nil;
-    if ([self.modeView conformsToProtocol:@protocol(MRStopableView)]
-        && [self.modeView respondsToSelector:@selector(setMayStop:)]) {
-        [((id<MRStopableView>)self.modeView) setMayStop:mayStop];
-    } else {
+    if (![self updateModeViewMayStop]) {
         #if DEBUG
             NSLog(@"** WARNING - %@: %@ is only valid to call when the mode view supports %@ declared in %@!",
                   NSStringFromClass(self.class),
@@ -480,6 +477,19 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
                   NSStringFromProtocol(@protocol(MRStopableView)));
         #endif
     }
+}
+
+- (BOOL)mayStop {
+    return _stopBlock != nil;
+}
+
+- (BOOL)updateModeViewMayStop {
+    if ([self.modeView conformsToProtocol:@protocol(MRStopableView)]
+        && [self.modeView respondsToSelector:@selector(setMayStop:)]) {
+        [((id<MRStopableView>)self.modeView) setMayStop:self.mayStop];
+        return YES;
+    }
+    return NO;
 }
 
 - (void)modeViewStopButtonTouchUpInside {
@@ -582,7 +592,16 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
     self.transform = self.transformForOrientation;
     
     CGRect bounds = self.superview.bounds;
-    self.center = CGPointMake(bounds.size.width / 2.0f, bounds.size.height / 2.0f);
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    
+    if ([self.superview isKindOfClass:[UIScrollView class]]) {
+        UIScrollView *sv = self.superview;
+        insets = sv.contentInset;
+    }
+    
+    self.center = CGPointMake((bounds.size.width - insets.left - insets.right) / 2.0f,
+                              (bounds.size.height - insets.top - insets.bottom) / 2.0f);
+
     if ([self.superview isKindOfClass:UIWindow.class] && UIInterfaceOrientationIsLandscape(UIApplication.sharedApplication.statusBarOrientation)) {
         // Swap width and height
         self.bounds = (CGRect){CGPointZero, {bounds.size.height, bounds.size.width}};
