@@ -595,7 +595,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
     UIEdgeInsets insets = UIEdgeInsetsZero;
     
     if ([self.superview isKindOfClass:[UIScrollView class]]) {
-        UIScrollView *sv = self.superview;
+        UIScrollView *sv = (UIScrollView*)self.superview;
         insets = sv.contentInset;
     }
     
