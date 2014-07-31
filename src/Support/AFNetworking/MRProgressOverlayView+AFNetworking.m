@@ -87,10 +87,10 @@ static void * MRTaskCountOfBytesReceivedContext = &MRTaskCountOfBytesReceivedCon
 
 - (void)setStopBlockForTask:(__weak NSURLSessionTask *)task {
     if (task) {
-        self.stopBlock = ^(MRProgressOverlayView *self){
-            [self mr_unregisterObserver];
+        self.stopBlock = ^(MRProgressOverlayView *argself){
+            [argself mr_unregisterObserver];
             
-            [self dismiss:YES];
+            [argself dismiss:YES];
             [task cancel];
         };
     } else {
@@ -154,10 +154,10 @@ static void * MRTaskCountOfBytesReceivedContext = &MRTaskCountOfBytesReceivedCon
 
 - (void)setStopBlockForOperation:(__weak AFURLConnectionOperation *)operation {
     if (operation) {
-        self.stopBlock = ^(MRProgressOverlayView *self){
-            [self mr_unregisterObserver];
+        self.stopBlock = ^(MRProgressOverlayView *argself){
+            [argself mr_unregisterObserver];
             
-            [self dismiss:YES];
+            [argself dismiss:YES];
             [operation cancel];
         };
     } else {
