@@ -207,6 +207,7 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
 #pragma mark - Clean up
 
 - (void)dealloc {
+    [self removeMotionEffects];
     [self unregisterFromKVO];
     [self unregisterFromNotificationCenter];
 }
@@ -759,6 +760,24 @@ static void *MRProgressOverlayViewObservationContext = &MRProgressOverlayViewObs
                                         [self motionEffectWithKeyPath:@"center.y" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis]];
     [self.dialogView addMotionEffect:motionEffectGroup];
     [self.blurView addMotionEffect:motionEffectGroup];
+}
+
+// Hsoi 2014-08-20 - Added
+//
+// I don't think you should have to remove the MotionEffects -- shouldn't the OS be handling that automatically?
+// But alas, it seems it may not be, because testing Leaks with Instruments turns up a lot of leaking here.
+// If I manually remove them all, then no more leaks. So here we are.
+
+- (void)removeMotionEffects {
+    NSArray* effects = self.dialogView.motionEffects;
+    for (UIMotionEffect* effect in effects) {
+        [self.dialogView removeMotionEffect:effect];
+    }
+
+    effects = self.blurView.motionEffects;
+    for (UIMotionEffect* effect in effects) {
+        [self.blurView removeMotionEffect:effect];
+    }
 }
 
 @end
