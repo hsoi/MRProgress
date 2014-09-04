@@ -79,8 +79,13 @@ static void * MRTaskCountOfBytesReceivedContext = &MRTaskCountOfBytesReceivedCon
             [notificationCenter addObserver:self selector:@selector(mr_hide:) name:AFNetworkingTaskDidSuspendNotification  object:task];
             
             // Observe progress
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wassign-enum"
             [task addObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesSent))     options:0 context:MRTaskCountOfBytesSentContext];
             [task addObserver:self forKeyPath:NSStringFromSelector(@selector(countOfBytesReceived)) options:0 context:MRTaskCountOfBytesReceivedContext];
+#pragma clang diagnostic pop
+        } else {
+            [self dismiss:YES];
         }
     }
 }
@@ -148,6 +153,8 @@ static void * MRTaskCountOfBytesReceivedContext = &MRTaskCountOfBytesReceivedCon
                 // Unregister
                 [weakSelf.operation setDownloadProgressBlock:originalDownloadProgressBlock];
             }];
+        } else {
+            [self dismiss:YES];
         }
     }
 }
@@ -262,7 +269,7 @@ static void * MRTaskCountOfBytesReceivedContext = &MRTaskCountOfBytesReceivedCon
 
 - (void)mr_observeValueForKeyPath:(NSString *)keyPath
                          ofObject:(id)object
-                           change:(__unused NSDictionary *)change
+                           change:(NSDictionary *)change
                           context:(void *)context
 {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000
