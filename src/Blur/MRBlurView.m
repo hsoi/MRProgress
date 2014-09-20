@@ -110,6 +110,11 @@
 }
 
 - (void)redraw {
+    // Hsoi 2014-09-20 - this is a workaround for the problem reported here: https://github.com/mrackwitz/MRProgress/issues/46
+    // This is the solution/workaround performed by the original reporter, as done in his fork: https://github.com/jdmunro/MRProgress/commit/9a93daf299919f1c6182a67d624f75fd28667e4d
+    return;
+    
+    /*
     #if DEBUG
         if (!NSThread.isMainThread) {
             NSLog(@"** WARNING - %@ -%@ should be always called on the main thread!",
@@ -142,6 +147,7 @@
             self.image = image;
         });
     });
+    */
 }
 
 
